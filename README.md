@@ -1,7 +1,33 @@
-# 1984 Theme for Zed
+# 1984 Theme for Zed IDE
 
-A Zed theme extension based on juanmnl's VSCode theme [1984 Cyberpunk Color Theme](https://github.com/juanmnl/vs-1984), Thanks to [juanmnl](https://github.com/juanmnl)
+> A Zed theme extension based on juanmnl's VSCode theme [1984 Cyberpunk Color Theme](https://github.com/juanmnl/vs-1984). Special thanks to [juanmnl](https://github.com/juanmnl).
 
-## License
+As a big fan of the Cyberpunk theme, I've adapted juanmnl's 1984 theme for Zed's UI. The primary modifications involved adjusting the color scheme to seamlessly integrate with Zed. I highly recommend using the Cyberpunk theme paired with JetBrains Mono or Fira Code fonts.
 
-MIT
+For more details, please refer to [juanmnl's 1984 project repository](https://github.com/juanmnl/vs-1984).
+
+### Cyberpunk
+
+![](https://raw.githubusercontent.com/chenmijiang/zed-1984/main/screenshots/cyberpunk.png)
+
+### Orwellian
+
+![](https://raw.githubusercontent.com/chenmijiang/zed-1984/main/screenshots/orwellian.png)
+
+### 1984
+
+**1984:** Regular + Bold font weights
+
+![](https://raw.githubusercontent.com/chenmijiang/zed-1984/main/screenshots/1984.png)
+
+**1984 Unbolded:** Only Regular font weight
+
+![](https://raw.githubusercontent.com/chenmijiang/zed-1984/main/screenshots/1984-unbolded.png)
+
+**1984 Fancy:** Regular + Italic font weights (recommended for long term usage)
+
+![](https://raw.githubusercontent.com/chenmijiang/zed-1984/main/screenshots/1984-fancy.png)
+
+**1984 Light:** Regular font weights (Works better w/o bracket pair colorizer)
+
+![](https://raw.githubusercontent.com/chenmijiang/zed-1984/main/screenshots/1984-light.png)
