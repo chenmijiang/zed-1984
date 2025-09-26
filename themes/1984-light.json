@@ -28,7 +28,7 @@
         "text.placeholder": "#7f8a99",
         "text.accent": "#46BDFF",
         "icon.accent": "#46BDFF",
-        "status_bar.background": "#070825",
+        "status_bar.background": "#e4e5f5",
         "title_bar.background": "#e4e5f5",
         "toolbar.background": "#e4e5f5",
         "tab_bar.background": "#dfe0f0",
@@ -170,8 +170,7 @@
             "color": "#00af4f"
           },
           "keyword": {
-            "color": "#FF16B0",
-            "font_style": "italic"
+            "color": "#FF16B0"
           },
           "operator": {
             "color": "#c300ff"

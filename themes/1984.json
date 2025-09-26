@@ -197,7 +197,7 @@
           },
           "keyword": {
             "color": "#FF16B0",
-            "font_style": "italic",
+            "font_style": null,
             "font_weight": 600
           },
           "operator": {
