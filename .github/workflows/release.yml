@@ -1,0 +1,167 @@
+name: Optimized Release Workflow
+
+on:
+  push:
+    branches:
+      - release
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      changelog: ${{ steps.changelog.outputs.changelog }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js (for JSON validation)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+        
+      - name: Install jq for JSON validation
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Validate extension files
+        run: |
+          echo "🔍 Validating extension files..."
+          
+          # Validate all theme JSON files
+          find themes -name "*.json" -exec echo "Validating {}" \; -exec jq empty {} \;
+          
+          # Validate extension.toml structure
+          if ! grep -q '^id = ' extension.toml || ! grep -q '^version = ' extension.toml; then
+            echo "❌ Invalid extension.toml structure"
+            exit 1
+          fi
+          
+          echo "✅ All files validated successfully"
+
+      - name: Determine version bump
+        id: version
+        uses: paulhatch/semantic-version@v5.4.0
+        with:
+          tag_prefix: "v"
+          major_pattern: "(BREAKING CHANGE|breaking|major)"
+          minor_pattern: "(feat|feature|minor)"
+          version_format: "${major}.${minor}.${patch}"
+          search_commit_body: true
+          bump_each_commit: false
+          change_path: "."
+
+      - name: Update extension.toml version
+        run: |
+          sed -i 's/version = ".*"/version = "${{ steps.version.outputs.version }}"/' extension.toml
+          
+          # Verify the update
+          UPDATED_VERSION=$(grep '^version = ' extension.toml | sed 's/version = "\(.*\)"/\1/')
+          if [ "$UPDATED_VERSION" != "${{ steps.version.outputs.version }}" ]; then
+            echo "❌ Version update failed"
+            exit 1
+          fi
+          echo "✅ Version updated to ${{ steps.version.outputs.version }}"
+
+      - name: Generate changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v4
+        with:
+          configuration: |
+            {
+              "categories": [
+                {"title": "## 🚀 Features", "labels": ["feature", "feat"]},
+                {"title": "## 🐛 Bug Fixes", "labels": ["fix", "bug"]},
+                {"title": "## 🔧 Maintenance", "labels": ["chore", "maintenance"]},
+                {"title": "## 📚 Documentation", "labels": ["docs", "documentation"]}
+              ],
+              "template": "#{{CHANGELOG}}\n\n**Full Changelog**: #{{UNCATEGORIZED}}",
+              "empty_template": "- No significant changes in this release"
+            }
+          fromTag: ${{ steps.version.outputs.previous_tag }}
+          toTag: v${{ steps.version.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit version update
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: bump version to ${{ steps.version.outputs.version }}'
+          file_pattern: 'extension.toml'
+          tagging_message: 'v${{ steps.version.outputs.version }}'
+
+  # publish:
+  #   name: Publish Extension
+  #   needs: release
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #       with:
+  #         ref: release
+  #         fetch-depth: 0
+
+  #     - name: Publish to Zed Extensions
+  #       id: publish_extension
+  #       uses: huacnlee/zed-extension-action@v1
+  #       with:
+  #         extension-name: 1984-theme
+  #         push-to: chenmijiang/zed-extensions
+  #         create-pullrequest: false
+  #       env:
+  #         COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
+  #       continue-on-error: true
+
+  #     - name: Create GitHub Release
+  #       uses: softprops/action-gh-release@v1
+  #       with:
+  #         tag_name: v${{ needs.release.outputs.version }}
+  #         name: Release v${{ needs.release.outputs.version }}
+  #         body: |
+  #           # 1984 Theme v${{ needs.release.outputs.version }}
+            
+  #           ${{ needs.release.outputs.changelog }}
+            
+  #           ## 📦 Installation
+  #           This theme is available in the Zed Extensions registry.
+            
+  #           ## 🎨 Theme Variants
+  #           - **1984**: Classic cyberpunk theme
+  #           - **1984 Cyberpunk**: Enhanced cyberpunk variant  
+  #           - **1984 Fancy**: Stylized version
+  #           - **1984 Light**: Light mode variant
+  #           - **1984 Orwellian**: Dystopian color scheme
+  #           - **1984 Unbolded**: Clean, unbolded variant
+            
+  #           **Extension Status:** ${{ steps.publish_extension.outcome == 'success' && '✅ Published to Zed Extensions' || '⚠️ Extension publishing failed - manual intervention required' }}
+  #         draft: false
+  #         prerelease: false
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  #     - name: Notify on failure
+  #       if: steps.publish_extension.outcome == 'failure'
+  #       run: |
+  #         echo "::warning::Extension publishing failed. Please check manually."
+  #         echo "Extension version: ${{ needs.release.outputs.version }}"
+  #         echo "Target repository: chenmijiang/zed-extensions"
