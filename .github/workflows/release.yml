@@ -95,16 +95,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Publish to Zed Extensions
-      #   id: publish_extension
-      #   uses: huacnlee/zed-extension-action@v1
-      #   with:
-      #     extension-name: 1984-theme
-      #     push-to: chenmijiang/zed-extensions
-      #     create-pullrequest: false
-      #   env:
-      #     COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
-      #   continue-on-error: true
+      - name: Publish to Zed Extensions
+        id: publish_extension
+        uses: huacnlee/zed-extension-action@v1
+        with:
+          extension-name: 1984-theme
+          push-to: chenmijiang/zed-extensions
+        env:
+          COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
+        continue-on-error: true
 
       - name: Notify completion
         run: |
