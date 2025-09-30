@@ -2,6 +2,6 @@ id = "1984-theme"
 name = "1984 Theme"
 description = "1984 theme for Zed"
 version = "0.0.1"
-schema_version = 1
+schema_version = 2
 authors = ["chenmijiang <jack_chenyuana@163.com>"]
 repository = "https://github.com/chenmijiang/zed-1984"
