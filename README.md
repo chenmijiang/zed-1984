@@ -6,6 +6,8 @@ As a big fan of the Cyberpunk theme, I've adapted juanmnl's 1984 theme for Zed's
 
 For more details, please refer to [juanmnl's 1984 project repository](https://github.com/juanmnl/vs-1984).
 
+> Here is the [zed editor config file](https://gist.github.com/chenmijiang/6cbf024be4143dd2c06b71dba12b59a7) that I often use, you can copy it to initialize.
+
 ### Cyberpunk
 
 ![](https://raw.githubusercontent.com/chenmijiang/zed-1984/main/screenshots/cyberpunk.png)
